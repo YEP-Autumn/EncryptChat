@@ -18,6 +18,10 @@ public class Chat {
     public Chat() {
     }
 
+    public Chat(String msg) {
+        this.msg = msg;
+    }
+
     public Chat(int friendId, int userId, String msg, Timestamp sendTime, boolean friendStatus) {
         this.friendId = friendId;
         this.userId = userId;

@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.laplace.encryptchat">
-
+    <!-- 系统默认拒绝的权限 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 全局弹窗 -->
+    <!-- 运行时权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 读权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 写权限 -->
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" /> <!-- 安装时权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="ACCESS_NOTIFICATION_POLICY" /> <!-- 通知显示在状态栏 -->
+    <uses-permission android:name="EXPAND_STATUS_BAR" /> <!-- 允许程序在状态栏扩展收缩 -->
+    <uses-permission android:name="INSTALL_SHORTCUT" /> <!-- 创建快捷方式 -->
+    <uses-permission android:name="android.permission.VIBRATE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,8 +21,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EncryptChat">
         <activity
-            android:name=".ChatPageActivity"
-            android:exported="true" />
+            android:name=".HomeActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".OpenScreenActivity"
             android:configChanges="orientation|screenSize"

@@ -1,18 +1,30 @@
 package com.laplace.encryptchat;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.laplace.encryptUtils.AHelper;
+import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -24,8 +36,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText friendId;
     private EditText key;
 
+    private long time = System.currentTimeMillis();
+
     private int egg = 0;
 
+    private static int count = (int) (Math.random() * 10) + 5;
 
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
@@ -74,9 +89,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void submit() {
+        if (egg > count) {
+            angry();
+            return;
+        }
         if (!verifies()) return;
-
-
+        Intent intent = new Intent(getLayoutInflater().getContext(), HomeActivity.class);
+        intent.putExtra("userId", AHelper.toSecret(String.valueOf(time), userId.getText().toString()));
+        intent.putExtra("friendId", AHelper.toSecret(String.valueOf(time), friendId.getText().toString()));
+        intent.putExtra("key", AHelper.toSecret(String.valueOf(time), key.getText().toString()));
+        intent.putExtra("time", time);
+        startActivity(intent);
+        Log.e(TAG, "submit: ");
     }
 
     /**
@@ -85,19 +109,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @return
      */
     private boolean verifies() {
-        if (egg > 10) ;
-        if ("".equals(userId.getText()) || userId.getText() == null) {
-            Toast.makeText(getLayoutInflater().getContext(), "UserId不能为空", Toast.LENGTH_SHORT).show();
+
+        if ("".equals(userId.getText().toString()) || userId.getText() == null) {
+            Toast.makeText(key.getContext(), "UserId不能为空", Toast.LENGTH_SHORT).show();
             egg++;
             return false;
         }
-        if ("".equals(friendId.getText()) || friendId.getText() == null) {
-            Toast.makeText(getLayoutInflater().getContext(), "FriendId不能为空", Toast.LENGTH_SHORT).show();
+        if ("".equals(friendId.getText().toString()) || friendId.getText() == null) {
+            Toast.makeText(friendId.getContext(), "FriendId不能为空", Toast.LENGTH_SHORT).show();
             egg++;
             return false;
         }
-        if (userId.getText() == friendId.getText()) {
-            Toast.makeText(getLayoutInflater().getContext(), "不能给自己发送消息", Toast.LENGTH_SHORT).show();
+        if (userId.getText().toString().equals(friendId.getText().toString())) {
+            Toast.makeText(getWindow().getContext(), "不能给自己发送消息", Toast.LENGTH_SHORT).show();
+            friendId.getText().clear();
             egg++;
             return false;
         }
@@ -111,7 +136,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      *
      * @return
      */
-    private boolean Angry() {
-        return false;
+    private void angry() {
+        Toast.makeText(getLayoutInflater().getContext(), "请认真一点!", Toast.LENGTH_SHORT).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getLayoutInflater().getContext());
+        View inflate = getLayoutInflater().inflate(R.layout.image_view, null);
+        builder.setView(inflate)
+                .create()
+                .show();
+        int random = (int) (Math.random() * 10);
+        random = random > 5 ? random - 5 : random;
+        count = +random + 5;
+        egg = 0;
     }
 }
