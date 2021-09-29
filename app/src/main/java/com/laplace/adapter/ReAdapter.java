@@ -38,7 +38,7 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.textView.setText(AHelper.toContent("", message.get(position).getMsg()));
+        holder.textView.setText(message.get(position).getMsg());
     }
 
 

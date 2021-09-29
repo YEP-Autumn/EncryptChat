@@ -63,7 +63,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
             if (signalman.messages.size() == 0) {
                 messageTotal.add(new Chat("无最新好友消息"));
                 adapter.setMessage(messageTotal);
-                adapter.notifyDataSetChanged();
+                adapter.notify();
                 return;
             }
 
@@ -71,7 +71,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
                 messageTotal.add(new Chat(AHelper.toContent(adapter.key, message.getMsg())));
             }
             adapter.setMessage(messageTotal);
-            adapter.notifyDataSetChanged();
+            adapter.notify();
             return;
         }
         if ("COMMON".equals(signalman.MODE)) {
