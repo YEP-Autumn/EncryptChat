@@ -17,7 +17,7 @@ public class Signalman {
      */
     public String MODE;
 
-    public String msg;
+    public Chat msg;
 
     public List<Chat> messages;
 
@@ -51,7 +51,7 @@ public class Signalman {
      */
     public String who;
 
-    public Signalman(String MODE, String msg, String secWebSocketKey) {
+    public Signalman(String MODE, Chat msg, String secWebSocketKey) {
         this.MODE = MODE;
         this.msg = msg;
         this.secWebSocketKey = secWebSocketKey;
@@ -63,20 +63,20 @@ public class Signalman {
         this.secWebSocketKey = secWebSocketKey;
     }
 
-    public Signalman(String MODE, String msg) {
+    public Signalman(String MODE, Chat msg) {
         this.MODE = MODE;
         this.msg = msg;
     }
 
 
-    public Signalman(String MODE, int userId, String msg, String mKey) {
+    public Signalman(String MODE, int userId, Chat msg, String mKey) {
         this.MODE = MODE;
         this.userId = userId;
         this.msg = msg;
         this.mKey = mKey;
     }
 
-    public Signalman(String MODE, int userId, String msg) {
+    public Signalman(String MODE, int userId, Chat msg) {
         this.MODE = MODE;
         this.userId = userId;
         this.msg = msg;

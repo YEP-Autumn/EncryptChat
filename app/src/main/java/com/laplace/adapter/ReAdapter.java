@@ -19,13 +19,17 @@ import java.util.List;
 public class ReAdapter extends RecyclerView.Adapter<ReAdapter.ViewHolder> {
 
     private List<Chat> message;
-    public String key;
+    private String key;
 
-    public void setMessage(List<Chat> message) {
-        this.message = message;
+    public ReAdapter(String key) {
+        this.key = key;
     }
 
-    public ReAdapter(List<Chat> message) {
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setMessage(List<Chat> message) {
         this.message = message;
     }
 
@@ -38,7 +42,16 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.textView.setText(message.get(position).getMsg());
+        if (message == null) return;
+        holder.textView.setText(toMsg(message.get(position)));
+    }
+
+    private String toMsg(Chat chat) {
+        if (chat.isSign()) {
+            return AHelper.toContent(key, chat.getMsg());
+        }
+        return chat.getMsg();
+
     }
 
 
@@ -47,8 +60,7 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.ViewHolder> {
         return message == null ? 0 : message.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-
+    static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
 
         public ViewHolder(@NonNull View itemView) {

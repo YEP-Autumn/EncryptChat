@@ -38,6 +38,19 @@ public class Chat {
         return msg;
     }
 
+    public boolean isSign() {
+        return sign;
+    }
+
+    public Chat(String msg, boolean sign) {
+        this.msg = msg;
+        this.sign = sign;
+    }
+
+    public void setSign(boolean sign) {
+        this.sign = sign;
+    }
+
     public void setMsg(String msg) {
         this.msg = msg;
     }
@@ -63,4 +76,5 @@ public class Chat {
     private String msg;
     private Timestamp sendTime;
     private boolean friendStatus;
+    private boolean sign;
 }

@@ -1,7 +1,11 @@
 package com.laplace.client;
 
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.laplace.adapter.ReAdapter;
@@ -20,10 +24,9 @@ import java.util.Map;
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
 
     private String TAG = "YEP";
-    Gson gson = new Gson();
-    private ReAdapter adapter;
-
-    List<Chat> messageTotal = new ArrayList<>();
+    private Gson gson = new Gson();
+    private Handler handler;
+    private List<Chat> messages = new ArrayList<>();
     private String secWebSocketKey;
 
     public WebSocketClient(URI serverUri) {
@@ -34,8 +37,10 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         super(serverUri, protocolDraft);
     }
 
-    public WebSocketClient(URI serverUri, Map<String, String> httpHeaders) {
+    public WebSocketClient(URI serverUri, Map<String, String> httpHeaders, Handler handler) {
         super(serverUri, httpHeaders);
+        this.handler = handler;
+
     }
 
     public WebSocketClient(URI serverUri, Draft protocolDraft, Map<String, String> httpHeaders) {
@@ -54,24 +59,20 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
     @Override
     public void onMessage(String s) {
         Signalman signalman = gson.fromJson(s, Signalman.class);
-        Log.e(TAG, "signalman: " + signalman);
+        Log.e(TAG, "signalman: " + signalman.MODE);
         if ("WELCOME".equals(signalman.MODE)) {
-            Log.e(TAG, "WELCOME模式");
-            secWebSocketKey = signalman.secWebSocketKey;
-//            System.out.println("欢迎进入");
-            messageTotal.add(new Chat("欢迎进入"));
-            if (signalman.messages.size() == 0) {
-                messageTotal.add(new Chat("无最新好友消息"));
-                adapter.setMessage(messageTotal);
-                adapter.notify();
-                return;
-            }
+            Message message = new Message();
+            message.what = 0x000;
+            messages.add(new Chat("欢迎进入", false));
 
-            for (Chat message : signalman.messages) {
-                messageTotal.add(new Chat(AHelper.toContent(adapter.key, message.getMsg())));
+            if (signalman.messages.size() != 0) {
+                messages.addAll(signalman.messages);
+            } else {
+                messages.add(new Chat("暂无最新好友信息", false));
             }
-            adapter.setMessage(messageTotal);
-            adapter.notify();
+            message.obj = messages;
+            handler.sendMessage(message);
+            Log.e(TAG, "欢迎进入");
             return;
         }
         if ("COMMON".equals(signalman.MODE)) {
@@ -80,36 +81,48 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         }
         if ("SIGN".equals(signalman.MODE)) {
             Log.e(TAG, "SIGN模式");
-            String msg = signalman.msg == null ? "" : signalman.msg;
-
-            try {
-                messageTotal.add(new Chat(AHelper.toContent(adapter.key, msg)));
-                adapter.setMessage(messageTotal);
-                adapter.notifyItemChanged(messageTotal.size());
-            } catch (Exception e) {
-                Log.e(TAG, "Exception ", e);
-            }
+            messages.addAll(signalman.messages);
+            Message message = getMessage(messages);
+            handler.sendMessage(message);
             return;
         }
         if ("CLOSE".equals(signalman.MODE)) {
-//            System.out.println("连接即将关闭");
             return;
         }
 
         if ("RECEIVED".equals(signalman.MODE)) {
-            Log.e(TAG, "好友不在线，消息记录到数据库中");
+            handler.sendMessage(getMessage(0x222));
+            return;
         }
 
         if ("ONLINE".equals(signalman.MODE)) {
-            Log.e(TAG, "好友上线了");
+            return;
         }
         if ("OFFLINE".equals(signalman.MODE)) {
-            Log.e(TAG, "好友离线了");
+            return;
         }
 
 
     }
 
+    @NonNull
+    private Message getMessage(Object ogj) {
+        Message message = getMessage();
+        message.obj = ogj;
+        return message;
+    }
+
+    private Message getMessage() {
+        Message message = new Message();
+        message.what = 0x111;
+        return message;
+    }
+
+    private Message getMessage(int what) {
+        Message message = getMessage();
+        message.what = what;
+        return message;
+    }
 
     @Override
     public void onClose(int i, String s, boolean b) {
@@ -122,18 +135,10 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
     }
 
 
-    public void addAdapter(ReAdapter adapter) {
-        this.adapter = adapter;
-    }
-
-    public void sendMsg(WebSocketClient webSocket, int userId, String msg, String key) {
-
-        Signalman signalman = new Signalman("COMMON", userId, msg, secWebSocketKey);
-
-        if (key != null) {
-            signalman = new Signalman("SIGN", userId, AHelper.toSecret(key, msg), secWebSocketKey);
-        }
+    public void sendMsg(int userId, String msg, String key) {
+        Signalman signalman = new Signalman("SIGN", userId, new Chat(AHelper.toSecret(key, msg), true), secWebSocketKey);
         String s = gson.toJson(signalman);
-        webSocket.send(s);
+        send(s);
     }
+
 }
