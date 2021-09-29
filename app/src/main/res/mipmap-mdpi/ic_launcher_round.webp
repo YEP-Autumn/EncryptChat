@@ -1,0 +1,54 @@
+package com.shark.zip;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.shark.file.FileUtils;
+import com.shark.http.HttpUtils;
+import com.shark.log.FileLogManager;
+import com.shark.task.TaskSignal;
+
+import java.io.File;
+import java.util.Map;
+
+import external.org.apache.commons.lang3.StringUtils;
+
+public class ZipDownLoadHandler {
+    /**
+     * 处理控制器ZipDownLoad注解
+     *
+     * @param controller
+     * @param parameters
+     * @return
+     */
+    public static boolean handleZipDownLoad(Object controller, Map<String, String> parameters, Context context) {
+        // 读取Class的注解信息
+        Class<?> controllerClass = controller.getClass();
+        if (!controllerClass.isAnnotationPresent(ZipDownLoad.class)) return true;
+
+        ZipDownLoad zipDownloadAnnotation = controllerClass.getAnnotation(ZipDownLoad.class);
+
+        String value = zipDownloadAnnotation.value();
+        String zipName = zipDownloadAnnotation.zipName();
+        String paramName = zipDownloadAnnotation.paramName();
+        boolean unzip = zipDownloadAnnotation.unzip();
+
+        // zipUrl参数获取
+        String zipUrl = "";
+        if (StringUtils.isEmpty(parameters.get(paramName)) && StringUtils.isEmpty(value)) {
+            new TaskSignal().failure("zip下载url无参数");
+            return false;
+        }
+
+        if (StringUtils.isNotEmpty(value)) {
+            zipUrl = value;
+        }
+
+        if (StringUtils.isNotEmpty(parameters.get(paramName))) {
+            zipUrl = parameters.get(paramName);
+        }
+
+        // 修改下载后zip名称
+        if (StringUtils.isEmpty(zipName)) {
+            zipName = context.getPackageName().replace(".", "") + ".zip";
+        

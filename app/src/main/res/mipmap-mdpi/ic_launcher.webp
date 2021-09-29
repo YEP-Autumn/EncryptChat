@@ -1,0 +1,29 @@
+package com.shark.controller;
+
+import com.example.magisk_mount_bridge.utils.LocalServiceLite;
+import com.google.gson.Gson;
+import com.shark.activity.ActivityRoute;
+import com.shark.activity.RouteResult;
+import com.shark.activity.RouteSetting;
+import com.shark.app.AppSetting;
+import com.shark.app.SubController;
+import com.shark.common.GlobalConfig;
+import com.shark.common.SharkController;
+import com.shark.hook.ContactsHook;
+import com.shark.http.HttpResponse;
+import com.shark.http.HttpUtils;
+import com.shark.log.FileLog;
+import com.shark.param.Param;
+import com.shark.param.SuccessResult;
+import com.shark.task.TaskSignal;
+import com.shark.tool.ScreenShot;
+import com.shark.web.WebViewHook;
+import com.shark.zip.ZipDownLoad;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+
+@AppSetting(value = "com.tencent.mm", timeOut = 60 * 60000
