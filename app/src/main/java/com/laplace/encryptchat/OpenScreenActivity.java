@@ -18,6 +18,8 @@ public class OpenScreenActivity extends AppCompatActivity {
 
     private Intent intent;
 
+    boolean flag = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,32 +33,9 @@ public class OpenScreenActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                Log.e(TAG, "动画结束了");
+                if (!flag) return;
+                flag = false;
                 startActivity(intent);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-                super.onAnimationRepeat(animation);
-                Log.e(TAG, "动画重复时");
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-                Log.e(TAG, "动画开始了");
-            }
-
-            @Override
-            public void onAnimationPause(Animator animation) {
-                super.onAnimationPause(animation);
-                Log.e(TAG, "动画暂停了");
-            }
-
-            @Override
-            public void onAnimationResume(Animator animation) {
-                super.onAnimationResume(animation);
-                Log.e(TAG, "动画Resume");
             }
         });
     }
@@ -68,14 +47,17 @@ public class OpenScreenActivity extends AppCompatActivity {
         finish();
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.e(TAG, "onDestroy: ");
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!flag) return true;
+        flag = false;
         Log.e(TAG, "onTouchEvent: " + event);
         startActivity(intent);
         objectAnimator.cancel();

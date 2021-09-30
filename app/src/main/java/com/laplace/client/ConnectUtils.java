@@ -23,10 +23,7 @@ public class ConnectUtils {
     }
 
     public String toStr(Chat chat) {
-        Log.e(TAG, "chat: " + chat.toString());
         if (chat.isSign()) {
-            Log.e(TAG, "toMsg: " + chat.getMsg());
-            Log.e(TAG, "toContent: " + AHelper.toContent(key, chat.getMsg()));
             return AHelper.toContent(key, chat.getMsg());
         }
         return chat.getMsg();
@@ -35,7 +32,6 @@ public class ConnectUtils {
     public String toJson(int userId, String msg) {
         Chat s = new Chat(AHelper.toSecret(key, msg), true);
         Signalman signalman = new Signalman("SIGN", userId, s);
-        Log.e(TAG, "toJson: " + s.toString());
         return new Gson().toJson(signalman);
     }
 

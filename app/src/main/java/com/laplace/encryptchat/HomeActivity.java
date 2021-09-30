@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.text.Editable;
@@ -17,6 +18,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.laplace.adapter.ReAdapter;
@@ -24,6 +27,7 @@ import com.laplace.client.ConnectUtils;
 import com.laplace.client.WebSocketClient;
 import com.laplace.encryptUtils.AHelper;
 import com.laplace.intermediator.Chat;
+import com.squareup.picasso.Picasso;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,33 +40,59 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "YEP";
     private WebSocketClient webSocketClient;
     private ReAdapter reAdapter = new ReAdapter();
-
+    private TextView statusText;
+    private ImageView statusImg;
+    private EditText editText;
+    private TextView friendIdText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        editText = findViewById(R.id.msg);
+        statusText = findViewById(R.id.status_text);
+        statusImg = findViewById(R.id.status_img);
+        friendIdText = findViewById(R.id.friend_id_text);
+
         Intent intent = getIntent();
         long time = intent.getLongExtra("time", 0L);
         String userId = AHelper.toContent(String.valueOf(time), intent.getStringExtra("userId"));
         String friendId = AHelper.toContent(String.valueOf(time), intent.getStringExtra("friendId"));
-
+        friendIdText.setText(friendId);
         // 用户通信的handler
         Handler handler = new Handler(Looper.myLooper(), message -> {
             switch (message.what) {
                 case 0x000:
+                    // WELCOME
                     reAdapter.setMessage((List<String>) message.obj);
                     reAdapter.notifyDataSetChanged();
                     Log.e(TAG, "handleMessage: ");
                     break;
                 case 0x111:
+                    // SIGN
                     reAdapter.setMessage((List<String>) message.obj);
                     reAdapter.notifyDataSetChanged();
                     break;
                 case 0x222:
+                    // RECEIVED
                     Toast.makeText(getLayoutInflater().getContext(), "好友未上线，数据保存到数据库中！", Toast.LENGTH_SHORT).show();
                     break;
                 case 0x333:
+                    // ONLINE
+                    Toast.makeText(getLayoutInflater().getContext(), "用户在线", Toast.LENGTH_SHORT).show();
+                    statusText.setText("在线");
+                    Picasso.get().load(R.drawable.online).into(statusImg);
+                    break;
+                case 0x444:
+                    // OFFLINE
+                    Toast.makeText(getLayoutInflater().getContext(), "用户离线", Toast.LENGTH_SHORT).show();
+                    statusText.setText("离线");
+                    Picasso.get().load(R.drawable.offline).into(statusImg);
+                    break;
+                case 0x555:
+                    break;
+                case 0x666:
                     break;
             }
             return false;
@@ -92,7 +122,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         // 设置点击事件
-        EditText editText = findViewById(R.id.msg);
         findViewById(R.id.send).setOnClickListener(view -> {
             Editable text = editText.getText();
             webSocketClient.send(connectUtils.toJson(Integer.parseInt(userId), text.toString()));
@@ -116,8 +145,12 @@ public class HomeActivity extends AppCompatActivity {
      * 隐藏输入法
      */
     private void hideTypeWriting() {
-        InputMethodManager im = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        try {
+            InputMethodManager im = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -61,12 +61,14 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
     @Override
     public void onMessage(String s) {
         Signalman signalman = gson.fromJson(s, Signalman.class);
-        Log.e(TAG, "signalman: " + signalman.MODE);
+        if (signalman.MODE == null) {
+            return;
+        }
+        Log.e(TAG, "signalman.MODE: " + signalman.MODE);
         if ("WELCOME".equals(signalman.MODE)) {
             Message message = new Message();
             message.what = 0x000;
             messages.add(connectUtils.toStr(new Chat("欢迎进入", false)));
-
             if (signalman.messages.size() != 0) {
                 messages.addAll(connectUtils.toStrList(signalman.messages));
             } else {
@@ -74,15 +76,12 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
             }
             message.obj = messages;
             connectUtils.handler.sendMessage(message);
-            Log.e(TAG, "欢迎进入");
             return;
         }
         if ("COMMON".equals(signalman.MODE)) {
-            Log.e(TAG, "COMMON模式");
             return;
         }
         if ("SIGN".equals(signalman.MODE)) {
-            Log.e(TAG, "SIGN模式");
             messages.add(connectUtils.toStr(signalman.msg));
             Message message = getMessage(messages);
             connectUtils.handler.sendMessage(message);
@@ -98,9 +97,11 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         }
 
         if ("ONLINE".equals(signalman.MODE)) {
+            connectUtils.handler.sendMessage(getMessage(0x333));
             return;
         }
         if ("OFFLINE".equals(signalman.MODE)) {
+            connectUtils.handler.sendMessage(getMessage(0x444));
             return;
         }
 

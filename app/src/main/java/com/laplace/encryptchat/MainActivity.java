@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         key = findViewById(R.id.key);
         Button submit = findViewById(R.id.button_submit);
         submit.setOnClickListener(this);
+        userId.getFocusable();
     }
 
     @Override
@@ -159,8 +160,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void hideTypeWriting() {
-        InputMethodManager im = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        try {
+            InputMethodManager im = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
 }
