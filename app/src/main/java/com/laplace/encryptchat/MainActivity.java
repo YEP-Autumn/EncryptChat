@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText friendId;
     private EditText key;
 
-    private long time = System.currentTimeMillis();
 
     private int egg = 0;
 
@@ -95,12 +94,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (!verifies()) return;
         Intent intent = new Intent(getLayoutInflater().getContext(), HomeActivity.class);
+        long time = System.currentTimeMillis();
         intent.putExtra("userId", AHelper.toSecret(String.valueOf(time), userId.getText().toString()));
         intent.putExtra("friendId", AHelper.toSecret(String.valueOf(time), friendId.getText().toString()));
         intent.putExtra("key", AHelper.toSecret(String.valueOf(time), key.getText().toString()));
         intent.putExtra("time", time);
         startActivity(intent);
-        Log.e(TAG, "submit: ");
+        Log.e(TAG, "submit key: " + key.getText().toString());
     }
 
     /**

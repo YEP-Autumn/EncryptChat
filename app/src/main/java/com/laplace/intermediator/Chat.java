@@ -77,4 +77,5 @@ public class Chat {
     private Timestamp sendTime;
     private boolean friendStatus;
     private boolean sign;
+
 }

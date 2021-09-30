@@ -25,8 +25,8 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
 
     private String TAG = "YEP";
     private Gson gson = new Gson();
-    private Handler handler;
-    private List<Chat> messages = new ArrayList<>();
+    private ConnectUtils connectUtils;
+    private List<String> messages = new ArrayList<>();
     private String secWebSocketKey;
 
     public WebSocketClient(URI serverUri) {
@@ -37,9 +37,9 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         super(serverUri, protocolDraft);
     }
 
-    public WebSocketClient(URI serverUri, Map<String, String> httpHeaders, Handler handler) {
+    public WebSocketClient(URI serverUri, Map<String, String> httpHeaders, ConnectUtils connectUtils) {
         super(serverUri, httpHeaders);
-        this.handler = handler;
+        this.connectUtils = connectUtils;
 
     }
 
@@ -63,15 +63,15 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         if ("WELCOME".equals(signalman.MODE)) {
             Message message = new Message();
             message.what = 0x000;
-            messages.add(new Chat("欢迎进入", false));
+            messages.add(connectUtils.toStr(new Chat("欢迎进入", false)));
 
             if (signalman.messages.size() != 0) {
-                messages.addAll(signalman.messages);
+                messages.addAll(connectUtils.toStrList(signalman.messages));
             } else {
-                messages.add(new Chat("暂无最新好友信息", false));
+                messages.add(connectUtils.toStr(new Chat("暂无最新好友信息", false)));
             }
             message.obj = messages;
-            handler.sendMessage(message);
+            connectUtils.handler.sendMessage(message);
             Log.e(TAG, "欢迎进入");
             return;
         }
@@ -81,9 +81,9 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         }
         if ("SIGN".equals(signalman.MODE)) {
             Log.e(TAG, "SIGN模式");
-            messages.addAll(signalman.messages);
+            messages.add(connectUtils.toStr(signalman.msg));
             Message message = getMessage(messages);
-            handler.sendMessage(message);
+            connectUtils.handler.sendMessage(message);
             return;
         }
         if ("CLOSE".equals(signalman.MODE)) {
@@ -91,7 +91,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         }
 
         if ("RECEIVED".equals(signalman.MODE)) {
-            handler.sendMessage(getMessage(0x222));
+            connectUtils.handler.sendMessage(getMessage(0x222));
             return;
         }
 
@@ -104,6 +104,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
 
 
     }
+
 
     @NonNull
     private Message getMessage(Object ogj) {
@@ -133,12 +134,4 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
     public void onError(Exception e) {
 
     }
-
-
-    public void sendMsg(int userId, String msg, String key) {
-        Signalman signalman = new Signalman("SIGN", userId, new Chat(AHelper.toSecret(key, msg), true), secWebSocketKey);
-        String s = gson.toJson(signalman);
-        send(s);
-    }
-
 }

@@ -1,5 +1,6 @@
 package com.laplace.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,18 +19,17 @@ import java.util.List;
 
 public class ReAdapter extends RecyclerView.Adapter<ReAdapter.ViewHolder> {
 
-    private List<Chat> message;
-    private String key;
+    private final String TAG = "YEP";
+    private List<String> message;
 
-    public ReAdapter(String key) {
-        this.key = key;
+    public ReAdapter() {
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public ReAdapter(List<String> message) {
+        this.message = message;
     }
 
-    public void setMessage(List<Chat> message) {
+    public void setMessage(List<String> message) {
         this.message = message;
     }
 
@@ -43,15 +43,7 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if (message == null) return;
-        holder.textView.setText(toMsg(message.get(position)));
-    }
-
-    private String toMsg(Chat chat) {
-        if (chat.isSign()) {
-            return AHelper.toContent(key, chat.getMsg());
-        }
-        return chat.getMsg();
-
+        holder.textView.setText(message.get(position));
     }
 
 
