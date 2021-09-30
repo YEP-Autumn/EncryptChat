@@ -5,11 +5,16 @@
 
     <TextView
         android:id="@+id/text_view"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/shape"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="30dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:textSize="25dp"
+        android:text="123456"
+        android:textSize="20dp"
         android:textColor="#ACBEEF" />
 </LinearLayout>

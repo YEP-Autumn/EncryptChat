@@ -80,13 +80,13 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case 0x333:
                     // ONLINE
-                    Toast.makeText(getLayoutInflater().getContext(), "用户在线", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getLayoutInflater().getContext(), "好友在线", Toast.LENGTH_SHORT).show();
                     statusText.setText("在线");
                     Picasso.get().load(R.drawable.online).into(statusImg);
                     break;
                 case 0x444:
                     // OFFLINE
-                    Toast.makeText(getLayoutInflater().getContext(), "用户离线", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getLayoutInflater().getContext(), "好友离线", Toast.LENGTH_SHORT).show();
                     statusText.setText("离线");
                     Picasso.get().load(R.drawable.offline).into(statusImg);
                     break;
