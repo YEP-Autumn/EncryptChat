@@ -1,9 +1,11 @@
 package com.laplace.client;
 
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 
@@ -127,6 +129,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
 
     @Override
     public void onClose(int i, String s, boolean b) {
+
     }
 
 

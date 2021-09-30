@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,8 +14,10 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -148,4 +151,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         count = +random + 5;
         egg = 0;
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        hideTypeWriting();
+        return super.onTouchEvent(event);
+    }
+
+    private void hideTypeWriting() {
+        InputMethodManager im = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
 }

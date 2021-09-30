@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,7 +13,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.Editable;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -46,7 +49,6 @@ public class HomeActivity extends AppCompatActivity {
 
         // 用户通信的handler
         Handler handler = new Handler(Looper.myLooper(), message -> {
-            Log.e(TAG, "message.what: " + message.what);
             switch (message.what) {
                 case 0x000:
                     reAdapter.setMessage((List<String>) message.obj);
@@ -103,4 +105,19 @@ public class HomeActivity extends AppCompatActivity {
         super.onStop();
         webSocketClient.close();
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        hideTypeWriting();
+        return super.onTouchEvent(event);
+    }
+
+    /**
+     * 隐藏输入法
+     */
+    private void hideTypeWriting() {
+        InputMethodManager im = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
 }
