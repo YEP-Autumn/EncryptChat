@@ -27,6 +27,7 @@ import com.laplace.client.ConnectUtils;
 import com.laplace.client.WebSocketClient;
 import com.laplace.encryptUtils.AHelper;
 import com.laplace.intermediator.Chat;
+import com.laplace.intermediator.M;
 import com.squareup.picasso.Picasso;
 
 import java.net.URI;
@@ -65,13 +66,13 @@ public class HomeActivity extends AppCompatActivity {
             switch (message.what) {
                 case 0x000:
                     // WELCOME
-                    reAdapter.setMessage((List<String>) message.obj);
+                    reAdapter.setMessage((List<M>) message.obj);
                     reAdapter.notifyDataSetChanged();
                     Log.e(TAG, "handleMessage: ");
                     break;
                 case 0x111:
                     // SIGN
-                    reAdapter.setMessage((List<String>) message.obj);
+                    reAdapter.setMessage((List<M>) message.obj);
                     reAdapter.notifyDataSetChanged();
                     break;
                 case 0x222:
@@ -91,6 +92,10 @@ public class HomeActivity extends AppCompatActivity {
                     Picasso.get().load(R.drawable.offline).into(statusImg);
                     break;
                 case 0x555:
+                    List<M> msg = reAdapter.getMessage();
+                    msg.add(new M((String) message.obj, true));
+                    reAdapter.setMessage(msg);
+                    reAdapter.notifyDataSetChanged();
                     break;
                 case 0x666:
                     break;
@@ -123,9 +128,15 @@ public class HomeActivity extends AppCompatActivity {
 
         // 设置点击事件
         findViewById(R.id.send).setOnClickListener(view -> {
-            Editable text = editText.getText();
-            webSocketClient.send(connectUtils.toJson(Integer.parseInt(userId), text.toString()));
-            text.clear();
+            Editable edText = editText.getText();
+            String text = edText.toString();
+            if ("".equals(text)) return;
+            webSocketClient.send(connectUtils.toJson(Integer.parseInt(userId), text));
+            Message message = new Message();
+            message.what = 0x555;
+            message.obj = text;
+            handler.sendMessage(message);
+            edText.clear();
         });
     }
 

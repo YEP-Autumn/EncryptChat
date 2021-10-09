@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.laplace.encryptUtils.AHelper;
 import com.laplace.intermediator.Chat;
+import com.laplace.intermediator.M;
 import com.laplace.intermediator.Signalman;
 
 import java.util.ArrayList;
@@ -35,10 +36,10 @@ public class ConnectUtils {
         return new Gson().toJson(signalman);
     }
 
-    public List<String> toStrList(List<Chat> chats) {
-        List<String> messages = new ArrayList<>();
+    public List<M> toStrList(List<Chat> chats) {
+        List<M> messages = new ArrayList<>();
         for (Chat chat : chats) {
-            messages.add(toStr(chat));
+            messages.add(new M(toStr(chat), false));
         }
         return messages;
     }

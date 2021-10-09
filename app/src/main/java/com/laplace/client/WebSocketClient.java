@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.laplace.adapter.ReAdapter;
 import com.laplace.encryptUtils.AHelper;
 import com.laplace.intermediator.Chat;
+import com.laplace.intermediator.M;
 import com.laplace.intermediator.Signalman;
 
 import org.java_websocket.drafts.Draft;
@@ -28,7 +29,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
     private String TAG = "YEP";
     private Gson gson = new Gson();
     private ConnectUtils connectUtils;
-    private List<String> messages = new ArrayList<>();
+    private List<M> messages = new ArrayList<>();
     private String secWebSocketKey;
 
     public WebSocketClient(URI serverUri) {
@@ -68,11 +69,11 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         if ("WELCOME".equals(signalman.MODE)) {
             Message message = new Message();
             message.what = 0x000;
-            messages.add(connectUtils.toStr(new Chat("欢迎进入", false)));
+            messages.add(new M(connectUtils.toStr(new Chat("欢迎进入", false)),false));
             if (signalman.messages.size() != 0) {
                 messages.addAll(connectUtils.toStrList(signalman.messages));
             } else {
-                messages.add(connectUtils.toStr(new Chat("暂无最新好友信息", false)));
+                messages.add(new M(connectUtils.toStr(new Chat("暂无最新好友信息", false)),false));
             }
             message.obj = messages;
             connectUtils.handler.sendMessage(message);
@@ -82,7 +83,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
             return;
         }
         if ("SIGN".equals(signalman.MODE)) {
-            messages.add(connectUtils.toStr(signalman.msg));
+            messages.add(new M(connectUtils.toStr(signalman.msg),false));
             Message message = getMessage(messages);
             connectUtils.handler.sendMessage(message);
             return;
