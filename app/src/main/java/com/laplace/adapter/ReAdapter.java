@@ -3,27 +3,17 @@ package com.laplace.adapter;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.laplace.encryptUtils.AHelper;
 import com.laplace.encryptchat.R;
-import com.laplace.intermediator.Chat;
-import com.laplace.intermediator.M;
-import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
+import com.laplace.bean.utilsbean.M;
 
 import java.util.List;
 
@@ -59,18 +49,18 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if (message == null) return;
         M m = message.get(position);
-        if (m.isMe()) {
-            holder.textView.setBackgroundResource(R.drawable.shape_reverse);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.gravity = Gravity.RIGHT;
-            lp.rightMargin = 30;
-            lp.topMargin = 80;
-            lp.leftMargin = 30;
-            lp.bottomMargin = 80;
-            holder.textView.setLayoutParams(lp);
-        } else {
-            holder.textView.setBackgroundResource(R.drawable.shape);
-        }
+//        if (m.isMe()) {
+//            holder.textView.setBackgroundResource(R.drawable.shape_reverse);
+//            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            lp.gravity = Gravity.RIGHT;
+//            lp.rightMargin = 30;
+//            lp.topMargin = 80;
+//            lp.leftMargin = 30;
+//            lp.bottomMargin = 80;
+//            holder.textView.setLayoutParams(lp);
+//        } else {
+//            holder.textView.setBackgroundResource(R.drawable.shape);
+//        }
         holder.textView.setText(m.getMessage());
     }
 

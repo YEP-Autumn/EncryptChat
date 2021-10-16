@@ -1,6 +1,5 @@
 package com.laplace.encryptchat;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,13 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
 import android.text.Editable;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,23 +18,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.laplace.adapter.ReAdapter;
-import com.laplace.client.ConnectUtils;
 import com.laplace.client.WebSocketClient;
 import com.laplace.encryptUtils.AHelper;
-import com.laplace.intermediator.Chat;
-import com.laplace.intermediator.M;
+import com.laplace.bean.utilsbean.M;
+import com.laplace.encryptchat.manager.SocketManager;
 import com.squareup.picasso.Picasso;
 
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = "YEP";
-    private WebSocketClient webSocketClient;
     private ReAdapter reAdapter = new ReAdapter();
     private TextView statusText;
     private ImageView statusImg;
@@ -57,10 +48,19 @@ public class HomeActivity extends AppCompatActivity {
         friendIdText = findViewById(R.id.friend_id_text);
 
         Intent intent = getIntent();
-        long time = intent.getLongExtra("time", 0L);
-        String userId = AHelper.toContent(String.valueOf(time), intent.getStringExtra("userId"));
-        String friendId = AHelper.toContent(String.valueOf(time), intent.getStringExtra("friendId"));
+        String userId = intent.getStringExtra("userId");
+        String friendId = intent.getStringExtra("friendId");
+        HashMap<String, String> map = new HashMap<>();
+        map.put("userId", userId);
+        map.put("friendId", friendId);
         friendIdText.setText(friendId);
+
+        // 为RecyclerView设置Adapter
+        RecyclerView recyclerView = findViewById(R.id.msg_item);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getLayoutInflater().getContext(), 1);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setAdapter(reAdapter);
+
         // 用户通信的handler
         Handler handler = new Handler(Looper.myLooper(), message -> {
             switch (message.what) {
@@ -102,27 +102,12 @@ public class HomeActivity extends AppCompatActivity {
             }
             return false;
         });
-
-        // Socket 和 Adapter之间通信的工具
-        ConnectUtils connectUtils = new ConnectUtils(handler, AHelper.toContent(String.valueOf(time), intent.getStringExtra("key")));
-
-
-        // 为RecyclerView设置Adapter
-        RecyclerView recyclerView = findViewById(R.id.msg_item);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getLayoutInflater().getContext(), 1);
-        recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(reAdapter);
-
-
-        // 创建Socket连接
-        HashMap<String, String> map = new HashMap<>();
-        map.put("userId", userId);
-        map.put("friendId", friendId);
+        SocketManager socketManager = new SocketManager(handler);
+        socketManager.setKey(intent.getStringExtra("key"));
         try {
-            webSocketClient = new WebSocketClient(new URI("ws://81.68.81.151:8788"), map, connectUtils);
-            webSocketClient.connect();
+            map.put("uri","ws://127.0.0.1:8083");
+            socketManager.start(map);
         } catch (URISyntaxException e) {
-            Log.e(TAG, "fail");
             e.printStackTrace();
         }
 
@@ -131,25 +116,9 @@ public class HomeActivity extends AppCompatActivity {
             Editable edText = editText.getText();
             String text = edText.toString();
             if ("".equals(text)) return;
-            webSocketClient.send(connectUtils.toJson(Integer.parseInt(userId), text));
-            Message message = new Message();
-            message.what = 0x555;
-            message.obj = text;
-            handler.sendMessage(message);
+            socketManager.send(text);
             edText.clear();
         });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        webSocketClient.close();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        hideTypeWriting();
-        return super.onTouchEvent(event);
     }
 
     /**

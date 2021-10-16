@@ -98,13 +98,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (!verifies()) return;
         Intent intent = new Intent(getLayoutInflater().getContext(), HomeActivity.class);
-        long time = System.currentTimeMillis();
-        intent.putExtra("userId", AHelper.toSecret(String.valueOf(time), userId.getText().toString()));
-        intent.putExtra("friendId", AHelper.toSecret(String.valueOf(time), friendId.getText().toString()));
-        intent.putExtra("key", AHelper.toSecret(String.valueOf(time), key.getText().toString()));
-        intent.putExtra("time", time);
+        intent.putExtra("userId", userId.getText().toString());
+        intent.putExtra("friendId", friendId.getText().toString());
+        intent.putExtra("key", key.getText().toString());
         startActivity(intent);
-        Log.e(TAG, "submit key: " + key.getText().toString());
     }
 
     /**

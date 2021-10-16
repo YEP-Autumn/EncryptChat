@@ -1,7 +1,5 @@
 package com.laplace.encryptUtils;
 
-import com.laplace.intermediator.Chat;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.nio.charset.StandardCharsets;

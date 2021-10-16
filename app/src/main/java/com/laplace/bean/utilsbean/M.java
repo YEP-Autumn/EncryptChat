@@ -1,7 +1,10 @@
-package com.laplace.intermediator;
+package com.laplace.bean.utilsbean;
 
 public class M {
+
     private String message;
+
+    private boolean isMe;
 
     public String getMessage() {
         return message;
@@ -28,5 +31,5 @@ public class M {
         this.isMe = isMe;
     }
 
-    private boolean isMe;
+
 }
