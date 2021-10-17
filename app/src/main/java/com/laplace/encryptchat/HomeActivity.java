@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +28,7 @@ import com.laplace.encryptchat.manager.SocketManager;
 import com.squareup.picasso.Picasso;
 
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +40,7 @@ public class HomeActivity extends AppCompatActivity {
     private ImageView statusImg;
     private EditText editText;
     private TextView friendIdText;
+    private SocketManager socketManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,50 +67,46 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView.setAdapter(reAdapter);
 
         // 用户通信的handler
+        @SuppressLint("NotifyDataSetChanged")
         Handler handler = new Handler(Looper.myLooper(), message -> {
             switch (message.what) {
                 case 0x000:
                     // WELCOME
-                    reAdapter.setMessage((List<M>) message.obj);
+                    reAdapter.message.addAll((List<M>) message.obj);
                     reAdapter.notifyDataSetChanged();
-                    Log.e(TAG, "handleMessage: ");
                     break;
                 case 0x111:
-                    // SIGN
-                    reAdapter.setMessage((List<M>) message.obj);
+                    // 添加消息
+                    reAdapter.message.add((M) message.obj);
                     reAdapter.notifyDataSetChanged();
                     break;
                 case 0x222:
                     // RECEIVED
-                    Toast.makeText(getLayoutInflater().getContext(), "好友未上线，数据保存到数据库中！", Toast.LENGTH_SHORT).show();
                     break;
                 case 0x333:
                     // ONLINE
-                    Toast.makeText(getLayoutInflater().getContext(), "好友在线", Toast.LENGTH_SHORT).show();
                     statusText.setText("在线");
                     Picasso.get().load(R.drawable.online).into(statusImg);
                     break;
                 case 0x444:
                     // OFFLINE
-                    Toast.makeText(getLayoutInflater().getContext(), "好友离线", Toast.LENGTH_SHORT).show();
                     statusText.setText("离线");
                     Picasso.get().load(R.drawable.offline).into(statusImg);
                     break;
                 case 0x555:
-                    List<M> msg = reAdapter.getMessage();
-                    msg.add(new M((String) message.obj, true));
-                    reAdapter.setMessage(msg);
-                    reAdapter.notifyDataSetChanged();
-                    break;
-                case 0x666:
+                    // 用户名重复
+                    Intent intentBack = new Intent(this, HomeActivity.class);
+                    intentBack.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intentBack);
+                    Toast.makeText(getApplicationContext(), "用户名已被使用", Toast.LENGTH_SHORT).show();
                     break;
             }
             return false;
         });
-        SocketManager socketManager = new SocketManager(handler);
+        socketManager = new SocketManager(handler);
         socketManager.setKey(intent.getStringExtra("key"));
         try {
-            map.put("uri","ws://127.0.0.1:8083");
+            map.put("uri", "ws://192.168.1.4:8083");
             socketManager.start(map);
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -121,6 +122,18 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        hideTypeWriting();
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        hideTypeWriting();
+        return super.onKeyLongPress(keyCode, event);
+    }
+
     /**
      * 隐藏输入法
      */
@@ -133,4 +146,15 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        socketManager.close();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        socketManager.close();
+        super.onDestroy();
+    }
 }

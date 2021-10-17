@@ -39,6 +39,7 @@ public class SocketManager {
         signMap.put("time", String.valueOf(time));
         String sign = String.valueOf((userId + friendId) * time);
         signMap.put("sign", AHelper.toSecret("YEP", sign));
+        manager.setFriendId(map.get("friendId"));
         return signMap;
     }
 
@@ -48,5 +49,14 @@ public class SocketManager {
 
     public void send(String text) {
         webSocketClient.send(text);
+        manager.showMyMessage(text);
+    }
+
+    public void close() {
+        if (webSocketClient.isClosed()) {
+            return;
+        }
+        webSocketClient.close();
+
     }
 }

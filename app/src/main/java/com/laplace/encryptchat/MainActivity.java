@@ -112,12 +112,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean verifies() {
 
         if ("".equals(userId.getText().toString()) || userId.getText() == null) {
-            Toast.makeText(key.getContext(), "UserId不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(userId.getContext(), "UserId不能为空", Toast.LENGTH_SHORT).show();
+            egg++;
+            return false;
+        }
+        if ("0".equals(userId.getText().toString())) {
+            Toast.makeText(userId.getContext(), "用户ID不能为0", Toast.LENGTH_SHORT).show();
             egg++;
             return false;
         }
         if ("".equals(friendId.getText().toString()) || friendId.getText() == null) {
             Toast.makeText(friendId.getContext(), "FriendId不能为空", Toast.LENGTH_SHORT).show();
+            egg++;
+            return false;
+        }
+        if ("0".equals(userId.getText().toString())||"0".equals(friendId.getText().toString())) {
+            Toast.makeText(userId.getContext(), "用户ID不能为0", Toast.LENGTH_SHORT).show();
             egg++;
             return false;
         }
