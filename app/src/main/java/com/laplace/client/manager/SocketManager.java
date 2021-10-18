@@ -1,4 +1,4 @@
-package com.laplace.encryptchat.manager;
+package com.laplace.client.manager;
 
 import android.os.Handler;
 import android.os.Message;
@@ -58,5 +58,10 @@ public class SocketManager {
         }
         webSocketClient.close();
 
+    }
+
+
+    public void sendToken() {
+        webSocketClient.sendToken();
     }
 }

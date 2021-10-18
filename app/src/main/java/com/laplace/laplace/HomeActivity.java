@@ -1,4 +1,4 @@
-package com.laplace.encryptchat;
+package com.laplace.laplace;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -11,24 +11,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.laplace.adapter.ReAdapter;
-import com.laplace.client.WebSocketClient;
-import com.laplace.encryptUtils.AHelper;
 import com.laplace.bean.utilsbean.M;
-import com.laplace.encryptchat.manager.SocketManager;
+import com.laplace.client.manager.SocketManager;
+import com.laplace.laplace.utils.ToastUtils;
 import com.squareup.picasso.Picasso;
 
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -95,10 +91,15 @@ public class HomeActivity extends AppCompatActivity {
                     break;
                 case 0x555:
                     // 用户名重复
-                    Intent intentBack = new Intent(this, HomeActivity.class);
-                    intentBack.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intentBack);
-                    Toast.makeText(getApplicationContext(), "用户名已被使用", Toast.LENGTH_SHORT).show();
+//                    Intent intentBack = new Intent(Objects.requireNonNull(peekAvailableContext()).getApplicationContext(), MainActivity.class);
+//                    intentBack.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    startActivity(intentBack);
+                    this.finish();
+                    ToastUtils.showToast(getLayoutInflater().getContext(), "用户名已被使用");
+                    break;
+                case 0x666:
+                    // 向发送token表示自己在线
+                    socketManager.sendToken();
                     break;
             }
             return false;
@@ -106,7 +107,9 @@ public class HomeActivity extends AppCompatActivity {
         socketManager = new SocketManager(handler);
         socketManager.setKey(intent.getStringExtra("key"));
         try {
-            map.put("uri", "ws://192.168.1.4:8083");
+//            map.put("uri", "ws://192.168.0.73:8788");
+            map.put("uri", "ws://81.68.81.151:8788");
+
             socketManager.start(map);
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -157,4 +160,6 @@ public class HomeActivity extends AppCompatActivity {
         socketManager.close();
         super.onDestroy();
     }
+
+
 }

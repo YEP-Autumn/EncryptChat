@@ -1,4 +1,4 @@
-package com.laplace.encryptchat;
+package com.laplace.laplace;
 
 import android.content.Context;
 

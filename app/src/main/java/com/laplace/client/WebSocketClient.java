@@ -64,5 +64,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
         text = manager.sign(text);
         super.send(text);
     }
-
+    public void sendToken() {
+        send(manager.sign("","TOKEN"));
+    }
 }

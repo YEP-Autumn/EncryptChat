@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.laplace.encryptchat.R;
+import com.laplace.laplace.R;
 import com.laplace.bean.utilsbean.M;
 
 import java.util.ArrayList;

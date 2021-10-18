@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.laplace.encryptchat">
+    package="com.laplace.laplace">
     <!-- 系统默认拒绝的权限 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 全局弹窗 -->
     <!-- 运行时权限 -->
@@ -21,13 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EncryptChat">
         <activity
-            android:name=".HomeActivity"
+            android:name="com.laplace.laplace.HomeActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".OpenScreenActivity"
+            android:name="com.laplace.laplace.OpenScreenActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait">
@@ -37,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="com.laplace.laplace.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:launchMode="singleInstance"

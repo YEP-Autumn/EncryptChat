@@ -1,33 +1,21 @@
-package com.laplace.encryptchat;
+package com.laplace.laplace;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.laplace.encryptUtils.AHelper;
-import com.squareup.picasso.Picasso;
-
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -64,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button submit = findViewById(R.id.button_submit);
         submit.setOnClickListener(this);
         userId.getFocusable();
+
     }
 
     @Override
@@ -126,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             egg++;
             return false;
         }
-        if ("0".equals(userId.getText().toString())||"0".equals(friendId.getText().toString())) {
+        if ("0".equals(userId.getText().toString()) || "0".equals(friendId.getText().toString())) {
             Toast.makeText(userId.getContext(), "用户ID不能为0", Toast.LENGTH_SHORT).show();
             egg++;
             return false;

@@ -59,15 +59,20 @@ public class MessageManager {
      * @param text
      * @return
      */
-    public String sign(String text) {
+
+    public String sign(String text,String MODE) {
         String message = AHelper.toSecret(key, text);
-        Signalman signalman = new Signalman("SIGN");
+        Signalman signalman = new Signalman(MODE);
         signalman.setMessage(message);
         signalman.setKey(socketKey);
         signalman.setTargetId(friendId);
         YEP autumn = new YEP();
-        autumn.SIGNATURE = gson.toJson(signalman);
+        autumn.SIGNATURE = AHelper.toSecret(socketKey,gson.toJson(signalman));
         return gson.toJson(autumn);
+    }
+
+    public String sign(String text) {
+        return sign(text,"SIGN");
     }
 
     public void receive(String sign) {
@@ -105,7 +110,7 @@ public class MessageManager {
             return;
         }
         if (autumn.SIGNATURE != null) {
-            Signalman signalman = gson.fromJson(autumn.SIGNATURE, Signalman.class);
+            Signalman signalman = gson.fromJson(AHelper.toContent(socketKey, autumn.SIGNATURE), Signalman.class);
             if ("SIGN".equals(signalman.getMODE())) {
                 String signText = signalman.getMessage();
                 String message = AHelper.toContent(key, signText);
@@ -114,6 +119,9 @@ public class MessageManager {
             /**
              * 预留扩展功能
              */
+            if("TOKEN".equals(signalman.getMODE())){
+                handler.sendMessage(getMessage(0x666));
+            }
         }
 
 
