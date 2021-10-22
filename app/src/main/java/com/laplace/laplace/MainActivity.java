@@ -4,11 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +19,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.laplace.okhttp.NetHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText friendId;
     private EditText key;
 
+    public static boolean isExit = true;
 
     private int egg = 0;
 
@@ -35,12 +41,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message message) {
-            if (message.what == 0x111) {
-                canExit = false;
+            switch (message.what) {
+                case 0x111:
+                    canExit = false;
+                    break;
+                case 0x222:
+                    refreshIsExit();
+
             }
             return false;
         }
     });
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +64,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button submit = findViewById(R.id.button_submit);
         submit.setOnClickListener(this);
         userId.getFocusable();
+        userId.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b)return;
+                Log.e(TAG, "onFocusChange: " + view.getId() + "  " + b);
+                Message message = new Message();
+                message.what = 0x222;
+                handler.sendMessage(message);
+            }
+        });
 
     }
 
@@ -100,6 +122,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private boolean verifies() {
 
+        if (isExit) {
+            Toast.makeText(userId.getContext(), "UserId已被占用", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         if ("".equals(userId.getText().toString()) || userId.getText() == null) {
             Toast.makeText(userId.getContext(), "UserId不能为空", Toast.LENGTH_SHORT).show();
             egg++;
@@ -164,4 +190,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * 调用接口判断用户名是否已被占用
+     */
+    private void refreshIsExit() {
+        String userIdNum = userId.getText().toString();
+        if ("".equals(userIdNum) || userId.getText() == null) {
+            return;
+        }
+        NetHelper.isOnline(userIdNum);
+    }
 }
