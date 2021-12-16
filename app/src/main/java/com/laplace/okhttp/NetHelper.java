@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.laplace.laplace.MainActivity;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -21,9 +22,8 @@ public class NetHelper {
     public static void isOnline(String userId) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("https://lzstarrynight.cn/isUsed")
+                .url("https://lzstarrynight.cn/EC/isUsed?userId=" + userId)
 //                .url("https://192.168.0.73:8088/isUsed")
-                .addHeader("userId",userId)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -31,9 +31,14 @@ public class NetHelper {
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.e("YEP", "onResponse: " + e.toString());
             }
+
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 Log.e("YEP", "onResponse: " + response.toString());
+
+                if ("false".equals(Objects.requireNonNull(response.body()).string())) {
+                    MainActivity.isExit = false;
+                }
             }
         });
     }

@@ -3,10 +3,12 @@ package com.laplace.client.manager;
 import android.os.Handler;
 import android.os.Message;
 import android.security.keystore.UserNotAuthenticatedException;
+import android.util.Log;
 
 import com.laplace.client.WebSocketClient;
 import com.laplace.client.manager.MessageManager;
 import com.laplace.encryptUtils.AHelper;
+import com.laplace.laplace.utils.TAG;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,9 +26,13 @@ public class SocketManager {
     }
 
     public void start(HashMap<String, String> map) throws URISyntaxException {
-        webSocketClient = new WebSocketClient(new URI(map.get("uri")), getSign(map));
-        webSocketClient.setManager(manager);
-        webSocketClient.connect();
+        try {
+            webSocketClient = new WebSocketClient(new URI(map.get("uri")), getSign(map));
+            webSocketClient.setManager(manager);
+            webSocketClient.connect();
+        } catch (Exception e) {
+            Log.e(TAG.TAG, "start: ", e);
+        }
     }
 
     private HashMap<String, String> getSign(HashMap<String, String> map) {

@@ -108,7 +108,7 @@ public class HomeActivity extends AppCompatActivity {
         socketManager.setKey(intent.getStringExtra("key"));
         try {
 //            map.put("uri", "ws://192.168.0.73:8788");
-            map.put("uri", "ws://81.68.81.151:8788");
+            map.put("uri", "wss://lzstarrynight.cn/channel");
 
             socketManager.start(map);
         } catch (URISyntaxException e) {
@@ -143,7 +143,9 @@ public class HomeActivity extends AppCompatActivity {
     private void hideTypeWriting() {
         try {
             InputMethodManager im = (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            if (im != null) {
+                im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
